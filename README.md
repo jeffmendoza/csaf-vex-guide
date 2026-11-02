@@ -4,7 +4,11 @@ This guide describes one simple, consistent way to create a compliant CSAF 2.1 V
 
 This guide is intentionally opinionated. It does not describe every valid CSAF representation. Follow these conventions unless the information you need to publish cannot be represented by them. The goal is for different authors to produce VEX documents with the same structure and semantics.
 
-The rules below are based on the [CSAF Base profile](csaf-v2.1.html#profile-1-csaf-base), the [VEX profile](csaf-v2.1.html#profile-5-vex), and the [mandatory tests](csaf-v2.1.html#mandatory-tests). Chapter 6 also defines recommended and informative tests. Those tests may suggest optional content, such as metrics or language metadata, but a recommendation is not an additional VEX conformance requirement. This guide prioritizes mandatory compliance and consistent output.
+This is independent guidance, not an official OASIS specification. The specification baseline for this guide is [CSAF 2.1 Committee Specification Draft 04, dated 21 October 2026](https://docs.oasis-open.org/csaf/csaf/v2.1/csd04/csaf-v2.1-csd04.html). CSAF 2.1 is still a draft; later revisions may change its requirements.
+
+The rules below are based on the [CSAF Base profile](https://docs.oasis-open.org/csaf/csaf/v2.1/csd04/csaf-v2.1-csd04.html#profile-1-csaf-base), the [VEX profile](https://docs.oasis-open.org/csaf/csaf/v2.1/csd04/csaf-v2.1-csd04.html#profile-5-vex), and the [mandatory tests](https://docs.oasis-open.org/csaf/csaf/v2.1/csd04/csaf-v2.1-csd04.html#mandatory-tests). Chapter 6 also defines recommended and informative tests. Those tests may suggest optional content, such as metrics or language metadata, but a recommendation is not an additional VEX conformance requirement. This guide prioritizes mandatory compliance and consistent output.
+
+For the other format covered in this repository, see the [OpenVEX overview](openvex-guide.md).
 
 ## The basic model
 
@@ -23,6 +27,8 @@ Use one vulnerability object per vulnerability. A document may contain multiple 
 ## Start with this document skeleton
 
 Replace every value in angle brackets. Use RFC 3339 timestamps, including a timezone.
+
+This skeleton is incomplete and is not ready to publish. Populate `vulnerabilities` with at least one assessed vulnerability and reference every defined product before publishing. See the [complete example](#complete-example) for a filled-in document.
 
 ```json
 {
@@ -330,6 +336,94 @@ The skeleton deliberately omits the following optional fields. Leave them out un
 
 Within objects that this guide does use, also omit optional dates, URLs, group references, audience fields, note titles, entitlements, restart instructions, and extensions. Use direct `product_ids` instead of product groups.
 
+## Complete example
+
+This fictional document assesses Example Server 4.2.1 as affected and recommends upgrading to 5.0.0. Replace the illustrative product, vulnerability identifier, publisher, and assessment with your own verified information.
+
+```json
+{
+  "$schema": "https://docs.oasis-open.org/csaf/csaf/v2.1/schema/csaf.json",
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.1",
+    "distribution": {
+      "tlp": {
+        "label": "CLEAR"
+      }
+    },
+    "publisher": {
+      "category": "vendor",
+      "name": "Example Corporation",
+      "namespace": "https://example.com/"
+    },
+    "title": "Example Server 4.2.1 VEX assessment for CVE-2026-12345",
+    "tracking": {
+      "current_release_date": "2026-10-22T16:00:00Z",
+      "id": "EXAMPLE-VEX-2026-001",
+      "initial_release_date": "2026-10-22T16:00:00Z",
+      "revision_history": [
+        {
+          "date": "2026-10-22T16:00:00Z",
+          "number": "1.0.0",
+          "summary": "Initial release."
+        }
+      ],
+      "status": "final",
+      "version": "1.0.0"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "vendor",
+        "name": "Example Corporation",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "Example Server",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "4.2.1",
+                "product": {
+                  "name": "Example Server 4.2.1",
+                  "product_id": "CSAFPID-0001"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2026-12345",
+      "notes": [
+        {
+          "category": "summary",
+          "text": "A crafted request can cause an out-of-bounds read."
+        }
+      ],
+      "product_status": {
+        "known_affected": [
+          "CSAFPID-0001"
+        ]
+      },
+      "remediations": [
+        {
+          "category": "vendor_fix",
+          "details": "Upgrade to Example Server 5.0.0.",
+          "product_ids": [
+            "CSAFPID-0001"
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
 ## Final checks
 
 Before publishing, verify all of the following:
@@ -347,3 +441,12 @@ Before publishing, verify all of the following:
 - Every flag and remediation has matching `product_ids`.
 - Dates use RFC 3339 date-time syntax, for example `2026-09-29T15:59:34Z`.
 - The tracking version matches the newest revision-history number, and all version values consistently use either semantic or integer versioning.
+
+## License
+
+Except for the JSON examples, this guide is licensed under the
+[Creative Commons Attribution 4.0 International License (CC BY 4.0)](LICENSE).
+The JSON examples, including complete documents, templates, and fragments, are
+dedicated to the public domain under [CC0 1.0 Universal (CC0-1.0)](LICENSE-CC0)
+and may be reused without attribution. Third-party material retains its existing
+license.

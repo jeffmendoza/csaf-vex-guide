@@ -2,6 +2,8 @@
 
 OpenVEX is a lightweight format for publishing Vulnerability Exploitability eXchange (VEX) information. Like CSAF VEX, it states whether a product is affected by a vulnerability and provides the information required to interpret that status.
 
+This is independent, opinionated guidance, not the official [OpenVEX specification](https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md). The examples use the `v0.2.0` context. For this repository's other guide, see the [practical CSAF 2.1 VEX guide](README.md).
+
 OpenVEX organizes this information as a list of statements. Each statement connects:
 
 ```text
@@ -12,7 +14,7 @@ The document and each statement also have a time context. This allows later stat
 
 ## Document structure
 
-An OpenVEX document contains document metadata and one or more statements:
+An OpenVEX document contains document metadata and one or more statements. The following skeleton is incomplete and is not ready to publish: populate `statements` with at least one assessment first. See the [complete example](#complete-example) for a filled-in document.
 
 ```json
 {
@@ -210,6 +212,36 @@ The same core information appears in both formats:
 
 CSAF defines a richer advisory document with a product tree and many optional security-advisory fields. OpenVEX is narrower: each statement directly connects products, one vulnerability, and one status.
 
+## Complete example
+
+This fictional document assesses one product as affected. Replace the illustrative product, vulnerability identifier, publisher, and assessment with your own verified information.
+
+```json
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://example.com/security/openvex/component-data-service",
+  "author": "Example Corporation",
+  "timestamp": "2026-09-29T16:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2026-12345"
+      },
+      "products": [
+        {
+          "@id": "pkg:nuget/Example.ComponentDataService@1.0.900-beta"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "No fix, workaround, or mitigation is currently available."
+    }
+  ]
+}
+```
+
+The statement inherits the document timestamp.
+
 ## Practical rules
 
 - Give every document a stable `@id`.
@@ -222,3 +254,12 @@ CSAF defines a richer advisory document with a product tree and many optional se
 - Always include a machine-readable `justification` for `not_affected`.
 - Do not guess a not-affected justification.
 - Publish an updated document when a status or action changes.
+
+## License
+
+Except for the JSON examples, this guide is licensed under the
+[Creative Commons Attribution 4.0 International License (CC BY 4.0)](LICENSE).
+The JSON examples, including complete documents, templates, and fragments, are
+dedicated to the public domain under [CC0 1.0 Universal (CC0-1.0)](LICENSE-CC0)
+and may be reused without attribution. Third-party material retains its existing
+license.
